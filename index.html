@@ -2,13 +2,48 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>quesitons</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHP Data Storage</title>
 </head>
 <body>
-<form action="db.html" method="GET">
-<label for="userInput">Enter something:</label>
-<input type="text" id="userInput" name="data">
-<button type="submit">Submit</button>
-</form>
+
+    <h2>Enter Data:</h2>
+    <input type="text" id="userInput" placeholder="Type something...">
+    <button onclick="submitData()">Submit</button>
+
+    <h3>Stored Data:</h3>
+    <ul id="dataList"></ul>
+
+    <script>
+        async function submitData() {
+            const userInput = document.getElementById("userInput").value;
+            if (!userInput) return alert("Please enter something!");
+
+            const response = await fetch("submit.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: "data=" + encodeURIComponent(userInput)
+            });
+
+            const result = await response.json();
+            alert(result.message);
+            fetchData();
+        }
+
+        async function fetchData() {
+            const response = await fetch("fetch.php");
+            const data = await response.json();
+            const list = document.getElementById("dataList");
+            list.innerHTML = "";
+            data.forEach(item => {
+                const li = document.createElement("li");
+                li.textContent = item.data;
+                list.appendChild(li);
+            });
+        }
+
+        fetchData();  // Load data on page load
+    </script>
+
 </body>
 </html>
